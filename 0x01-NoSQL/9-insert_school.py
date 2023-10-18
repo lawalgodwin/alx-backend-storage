@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """A module that with a function for inserting a doc into collection"""
 from pymongo.collection import Collection
 
