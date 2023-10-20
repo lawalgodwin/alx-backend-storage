@@ -15,10 +15,9 @@ Requirements:
         method=GET
         path=/status
 """
-from pymongo.collection import Collection
 
 
-def analyse_logs(mongo_collection: Collection) -> None:
+def analyse_logs(mongo_collection):
     """Analyse nginx logs stored in the database"""
     cursor = mongo_collection.aggregate([
         {"$match": {}},
