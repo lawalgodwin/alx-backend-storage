@@ -1,4 +1,57 @@
 #!/usr/bin/env python3
+
+
+import redis
+from uuid import uuid4
+from typing import Union, Optional, Callable
+
+"""Task 3: Incrementing values
+
+Familiarize yourself with the INCR command and its python equivalent.
+
+In this task, we will implement a system to count how many times methods
+of the Cache class are called.
+
+Above Cache define a count_calls decorator that takes a single method
+Callable argument and returns a Callable.
+
+As a key, use the qualified name of method using the
+__qualname__ dunder method.
+
+Create and return function that increments the count for that key
+
+every time the method is called and returns the value returned by
+
+the original method.
+
+Remember that the first argument of the wrapped function will
+
+be self which is the instance itself, which lets you access
+
+the Redis instance.
+
+Protip: when defining a decorator it is useful to use functool.wraps
+
+to conserve the original function’s name, docstring, etc.
+
+Make sure you use it as described here:
+https://docs.python.org/3.7/library/functools.html#functools.wraps
+"""
+from functools import wraps
+
+
+def count_calls(method: Callable) -> Callable:
+    """A decorator for a funtion that counts method calls on redis"""
+    key = method.__qualname__
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        """wrapper for the decorated function"""
+        self._redis.incr(key)
+        return method(self, *args, **kwargs)
+    return wrapper
+
+
 """Task 0:  Writing strings to Redis
 
 Create a Cache class. In the __init__ method, store an instance
@@ -14,11 +67,6 @@ Type-annotate store correctly. Remember that data can be a
 
 str, bytes, int or float
 """
-
-import redis
-from uuid import uuid4
-from typing import Union, Optional, Callable
-
 UnionOfTypes = Union[str, bytes, int, float]
 
 
@@ -28,6 +76,7 @@ class Cache:
         self._redis = redis.Redis()
         self._redis.flushdb()
 
+    @count_calls
     def store(self, data: UnionOfTypes) -> str:
         """Store the given data in redis and returns the key"""
         key = str(uuid4())
