@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """A module containing the basic usage of redis database"""
 
-# from redis import Redis
 import redis
 from uuid import uuid4
 from typing import Union
