@@ -19,26 +19,11 @@ Requirements:
 
 def analyse_logs(mongo_collection):
     """Analyse nginx logs stored in the database"""
-    cursor = mongo_collection.aggregate([
-        {"$match": {}},
-        {"$group": {"_id": "$method", "count": {"$sum": 1}}}
-    ])
-
     allowed_methods = ["GET", "POST", "PUT", "PATCH", "DELETE"]
 
-    data = [{'method': doc.get("_id"), 'count': doc.get('count')}
-            for doc in cursor
-            ]
-
-    fetched_methods = [doc.get('method') for doc in data]
-
     for method in allowed_methods:
-        if method in fetched_methods:
-            for doc in data:
-                if (doc.get('method') == method):
-                    print(f"\tmethod {method}: {doc.get('count')}")
-        else:
-            print(f"\tmethod {method}: 0")
+        request_count = mongo_collection.count_documents({"method": method})
+        print(f"\tmethod {method}: {request_count}")
 
     status_req_count = (mongo_collection.count_documents({'method': 'GET',
                                                           'path': '/status'}))
