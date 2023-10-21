@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """A module containing the basic usage of redis database"""
 
-from redis import Redis
+# from redis import Redis
+import redis
 from uuid import uuid4
 from typing import Union
 
@@ -9,7 +10,7 @@ from typing import Union
 class Cache:
     def __init__(self):
         """Store an instance of the redis database"""
-        self._redis = Redis()
+        self._redis = redis.Redis()
         self._redis.flushdb()
 
     def store(self, data: Union[str, bytes, int, float]) -> str:
