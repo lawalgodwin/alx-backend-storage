@@ -12,6 +12,7 @@ from pymongo import DESCENDING
 def top_students(mongo_collection):
     """Returns all students sorted by average score"""
     pipeline = [
+        {"$match": {}},
         {"$project": {
             "name": "$name",
             "averageScore": {"$avg": "$topics.score"}
