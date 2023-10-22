@@ -113,7 +113,10 @@ def replay(method: Callable) -> None:
     function_name = method.__qualname__
     method_call_count = db.get(function_name)
     print("{} was called {} times:".format(function_name, method_call_count))
-    for input, output in zip(input_list, output_list):
+    # get the list from the db
+    inputs = db.lrange(input_list, 0, -1)
+    outputs = db.lrange(output_list, 0, -1)
+    for input, output in zip(inputs, outputs):
         try:
             input = input.decode('utf-8')
             output = output.decode('utf-8')
