@@ -121,7 +121,8 @@ def replay(method: Callable) -> None:
             input = input.decode('utf-8')
             output = output.decode('utf-8')
         except Exception:
-            input = output = ""
+            output = ""
+            input = ""
         finally:
             print("{}(*{}) -> {}".format(function_name, input, output))
 
