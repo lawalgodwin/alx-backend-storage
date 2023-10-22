@@ -5,7 +5,7 @@ import redis
 from uuid import uuid4
 from typing import Union, Optional, Callable
 
-"""Task 3: Incrementing values
+"""Task 2: Incrementing values
 
 Familiarize yourself with the INCR command and its python equivalent.
 
@@ -36,6 +36,8 @@ to conserve the original function’s name, docstring, etc.
 
 Make sure you use it as described here:
 https://docs.python.org/3.7/library/functools.html#functools.wraps
+
+Decorate Cache.store with count_calls
 """
 from functools import wraps
 
@@ -49,6 +51,41 @@ def count_calls(method: Callable) -> Callable:
         """wrapper for the decorated function"""
         self._redis.incr(key)
         return method(self, *args, **kwargs)
+    return wrapper
+
+# Task 3: Storing List:
+# Familiarize yourself with redis commands RPUSH, LPUSH, LRANGE, etc.
+
+# In this task, we will define a call_history decorator to store the
+# history of inputs and outputs for a particular function.
+# Everytime the original function will be called, we will add its
+# input parameters to one list in redis, and store its output into
+# another list.
+# In call_history, use the decorated function’s qualified name and
+# append ":inputs" and ":outputs" to create input and output list keys
+# respectively.
+# call_history has a single parameter named method that is a Callable
+# and returns a Callable.
+# In the new function that the decorator will return, use rpush to
+# append the input arguments. Remember that Redis can only store strings,
+# bytes and numbers. Therefore, we can simply use str(args) to normalize.
+# We can ignore potential kwargs for now.
+# Execute the wrapped function to retrieve the output.
+# Store the output using rpush in the "...:outputs" list,
+# then return the output.
+# Decorate Cache.store with call_history.
+
+def call_history(method: Callable) -> Callable:
+    """Decorator function for keeping track of input and output"""
+    input_list = f'{method.__qualname__}:inputs'
+    output_list = f'{method.__qualname__}:outputs'
+
+    @wraps(method)
+    def wrapper(self, *args, **kwargs):
+        self._redis.rpush(input_list, str(args))
+        output = method(self, *args, **kwargs)
+        self._redis.rpush(output_list, output)
+        return output
     return wrapper
 
 
@@ -77,6 +114,7 @@ class Cache:
         self._redis.flushdb()
 
     @count_calls
+    @call_history
     def store(self, data: UnionOfTypes) -> str:
         """Store the given data in redis and returns the key"""
         key = str(uuid4())
