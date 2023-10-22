@@ -75,6 +75,7 @@ def count_calls(method: Callable) -> Callable:
 # then return the output.
 # Decorate Cache.store with call_history.
 
+
 def call_history(method: Callable) -> Callable:
     """Decorator function for keeping track of input and output"""
     input_list = f'{method.__qualname__}:inputs'
@@ -87,6 +88,35 @@ def call_history(method: Callable) -> Callable:
         self._redis.rpush(output_list, output)
         return output
     return wrapper
+
+# """Task 4: Retrieving lists
+# In this tasks, we will implement a replay function to display the
+# history of calls of a particular function.
+# Use keys generated in previous tasks to generate the following output:
+# >>> cache = Cache()
+# >>> cache.store("foo")
+# >>> cache.store("bar")
+# >>> cache.store(42)
+# >>> replay(cache.store)
+# Cache.store was called 3 times:
+# Cache.store(*('foo',)) -> 13bf32a9-a249-4664-95fc-b1062db2038f
+# Cache.store(*('bar',)) -> dcddd00c-4219-4dd7-8877-66afbe8e7df8
+# Cache.store(*(42,)) -> 5e752f2b-ecd8-4925-a3ce-e2efdee08d20
+# """
+
+
+def replay(method: Callable) -> Callable:
+    """Display the history of both input and output"""
+    db = redis.Redis()
+    input_list = f'{method.__qualname__}:inputs'
+    output_list = f'{method.__qualname__}:outputs'
+    function_name = method.__qualname__
+    method_call_count = db.get(function_name)
+    print("{} was called {} times:".format(function_name, method_call_count))
+    for input, output in zip(input_list, output_list):
+        input = input.decode('utf-8')
+        output = output.decode('utf-8')
+        print("{}(*{}) -> {}".format(function_name, input, output))
 
 
 """Task 0:  Writing strings to Redis
