@@ -114,9 +114,13 @@ def replay(method: Callable) -> None:
     method_call_count = db.get(function_name)
     print("{} was called {} times:".format(function_name, method_call_count))
     for input, output in zip(input_list, output_list):
-        input = input.decode('utf-8')
-        output = output.decode('utf-8')
-        print("{}(*{}) -> {}".format(function_name, input, output))
+        try: 
+            input = input.decode('utf-8')
+            output = output.decode('utf-8')
+        except Exception:
+            input = output = ""
+        finally:
+            print("{}(*{}) -> {}".format(function_name, input, output))
 
 
 """Task 0:  Writing strings to Redis
