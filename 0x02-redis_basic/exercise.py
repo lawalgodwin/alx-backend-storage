@@ -106,7 +106,7 @@ def call_history(method: Callable) -> Callable:
 
 
 def replay(method: Callable) -> None:
-    """Display the history of both input and output"""
+    """Display the history of a function call"""
     db = redis.Redis()
     input_list = f'{method.__qualname__}:inputs'
     output_list = f'{method.__qualname__}:outputs'
