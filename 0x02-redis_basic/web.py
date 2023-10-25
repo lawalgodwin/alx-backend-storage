@@ -40,9 +40,10 @@ def addwebcacheandtracker(func: Callable) -> Callable:
         # get cached content
         if db.get(cached_page):
             return db.get(cached_page).decode("utf-8")
+        # get content from database if not cached
         html_page_content = func(url)
         db.incr(url_access_count)
-        db.set(cached_page, str(html_page_content))
+        db.set(cached_page, str(html_page_content, ex=10))
         db.expire(cached_page, 10)
         return html_page_content
     return wrapper
