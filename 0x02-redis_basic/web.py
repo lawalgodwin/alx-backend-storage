@@ -52,9 +52,11 @@ def addwebcacheandtracker(func: Callable) -> Callable:
 @addwebcacheandtracker
 def get_page(url: str) -> str:
     """ Craw a web page and return the web page"""
+    user_agent_part1 = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+    user_agent_part2 = 'AppleWebKit/537.36 Chrome/91.0.4472.124 Safari/537.36'
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': user_agent_part1 + user_agent_part2
     }
 
     res = requests.get(url, headers=headers).text
