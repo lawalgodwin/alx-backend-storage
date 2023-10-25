@@ -26,25 +26,24 @@ import requests
 from typing import Callable
 from functools import wraps
 
-db = redis.Redis()
+cache = redis.Redis()
 
 
 def addwebcacheandtracker(func: Callable) -> Callable:
     """a get_page(crawler) decorator that adds caching to the crawller"""
 
     @wraps(func)
-    def wrapper(url, **kwargs):
+    def wrapper(url) -> str:
         """The decorated function wrapper"""
         url_access_count = f"count:{url}"
         cached_page = f'cached:{url}'
         # get cached content
-        if db.get(cached_page):
-            return db.get(cached_page).decode("utf-8")
+        if cache.get(cached_page):
+            return cache.get(cached_page).decode("utf-8")
         # get content from database if not cached
         html_page_content = func(url)
-        db.incr(url_access_count)
-        db.set(cached_page, str(html_page_content, ex=10))
-        db.expire(cached_page, 10)
+        cache.incr(url_access_count)
+        cache.setex(cached_page, 10, str(html_page_content))
         return html_page_content
     return wrapper
 
