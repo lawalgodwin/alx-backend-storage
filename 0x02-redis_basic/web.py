@@ -36,14 +36,15 @@ def addwebcacheandtracker(func: Callable) -> Callable:
     def wrapper(url) -> str:
         """The decorated function wrapper"""
         url_access_count = f"count:{url}"
-        cached_page = f'cached:{url}'
+        cached_page_key = f'cached:{url}'
+        cached_page = cache.get(cached_page_key)
         # get cached content
-        if cache.get(cached_page):
-            return cache.get(cached_page).decode("utf-8")
+        if cached_page:
+            return cached_page.decode("utf-8")
         # get content from database if not cached
         html_page_content = func(url)
         cache.incr(url_access_count)
-        cache.setex(cached_page, 10, str(html_page_content))
+        cache.setex(cached_page_key, 10, str(html_page_content))
         return html_page_content
     return wrapper
 
@@ -54,10 +55,11 @@ def get_page(url: str) -> str:
 
     res = requests.get(url)
 
-    return (res.content.decode("utf-8"))
+    return (res.text)
 
 
 if __name__ == '__main__':
     url = 'http://slowwly.robertomurray.co.uk'
+    # url = 'http://google.com'
     result = get_page(url)
     print(result)
