@@ -54,7 +54,7 @@ def get_page(url: str) -> str:
     """ Craw a web page and return the web page"""
 
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:110.0) Gecko/20100101 Firefox/110.0'
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/91.0.4472.124 Safari/537.36'
     }
 
     res = requests.get(url, headers=headers).text
