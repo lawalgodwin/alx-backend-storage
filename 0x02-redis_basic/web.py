@@ -35,12 +35,15 @@ def addwebcacheandtracker(func: Callable) -> Callable:
     @wraps(func)
     def wrapper(url, **kwargs):
         """The decorated function wrapper"""
-        db.incr(f'count:{url}')
-        result_page = f'result:{url}'
-        if db.get(result_page):
-            return db.get(result_page).decode("utf-8")
+        url_access_count = f"count:{url}"
+        cached_page = f'cached:{url}'
+        # get cached content
+        if db.get(cached_page):
+            return db.get(cached_page).decode("utf-8")
         html_page_content = func(url)
-        db.setex(result_page, 10, str(html_page_content))
+        db.incr(url_access_count)
+        db.set(cached_page, str(html_page_content))
+        db.expire(cached_page, 10)
         return html_page_content
     return wrapper
 
