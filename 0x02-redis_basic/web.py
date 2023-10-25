@@ -53,13 +53,17 @@ def addwebcacheandtracker(func: Callable) -> Callable:
 def get_page(url: str) -> str:
     """ Craw a web page and return the web page"""
 
-    res = requests.get(url).text
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:110.0) Gecko/20100101 Firefox/110.0'
+    }
+
+    res = requests.get(url, headers=headers).text
 
     return (res)
 
 
 if __name__ == '__main__':
-    url = 'http://slowwly.robertomurray.co.uk'
-    # url = 'http://google.com'
+    # url = 'http://slowwly.robertomurray.co.uk'
+    url = 'http://google.com'
     result = get_page(url)
     print(result)
