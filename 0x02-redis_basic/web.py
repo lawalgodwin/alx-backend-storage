@@ -53,9 +53,9 @@ def addwebcacheandtracker(func: Callable) -> Callable:
 def get_page(url: str) -> str:
     """ Craw a web page and return the web page"""
 
-    res = requests.get(url)
+    res = requests.get(url).text
 
-    return (res.text)
+    return (res)
 
 
 if __name__ == '__main__':
